@@ -1,1 +1,1 @@
-# newschat-with-impression
+# 感想付きニュース雑談対話コーパス
