@@ -1,0 +1,65 @@
+<!--
+  Copyright (c) 2023 Fuka Narita.
+  This source code is licensed under the MIT license found in the
+  LICENSE file in the root directory of this source tree.
+
+  Copyright (c) 2020 Kurohashi-Chu-Murawaki lab, Kyoto University.
+  Licensed under the MIT license.
+  https://opensource.org/licenses/mit-license.php
+-->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>チャットサーバー</title>
+    <link rel="stylesheet" href="default_static/default_style.css">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="default_static/default_utils.js"></script>
+    <script src="static/utils.js"></script>
+    <script>
+        function validateForm(evt) {
+            // Perform some validations here.
+            // If something is invalid, show an error message and return false.
+            // Otherwise return true.
+            //
+            // For example:
+            //
+            // var selectedPartnerType = $('input[name="partner-type"]:checked').val();
+            // if (selectedPartnerType == 'gender-same' && (!selectedGender || selectedGender == 'unknown')) {
+            //     showSimpleDialog('注意', '同性とのチャットを希望される場合は、あなたの性別を選択してください。');
+            //     return false;
+            //}
+            return true;
+        }
+
+        $(document).ready(function(evt) {
+            // The clientTabId is used to differentiate users
+            // when the client uses more than one tab in his browser.
+            var clientTabId = new Date().getTime();
+            $('#client-tab-id').val(clientTabId);
+
+            $('#join-chat').on('click', validateForm);
+
+            $('#system_or_user').val("user");
+            $('#hidden_news_num').val("-1");
+        });
+    </script>
+</head>
+<body class="column">
+<h1>チャットサーバー</h1>
+<br/><br/>
+<p>チャットをスタートする時はボタンをクリックして下さい。</p>
+<br/><br/>
+<form id="form-join" action="join" method="POST">
+    <input type="hidden" id="client-tab-id" name="clientTabId"/>
+    <input type="hidden" id="system_or_user" name="systemOrUser"/>
+    <input type="hidden" id="hidden_news_num" name="newsNum"/>
+</form>
+<input type="submit" id="join-chat" value="チャットを始める" class="button" form="form-join"/>
+<div id="dialog-simple"></div>
+</body>
+</html>

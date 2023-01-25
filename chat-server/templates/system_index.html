@@ -1,0 +1,104 @@
+<!--
+  Copyright (c) 2023 Fuka Narita.
+  This source code is licensed under the MIT license found in the
+  LICENSE file in the root directory of this source tree.
+
+  Copyright (c) 2020 Kurohashi-Chu-Murawaki lab, Kyoto University.
+  Licensed under the MIT license.
+  https://opensource.org/licenses/mit-license.php
+-->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>チャットサーバー</title>
+    <link rel="stylesheet" href="default_static/default_style.css">
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="default_static/default_utils.js"></script>
+    <script src="static/utils.js"></script>
+    <script src="static/system_instruction.js"></script>
+    <script>
+        function validateForm(evt) {
+            // Perform some validations here.
+            // If something is invalid, show an error message and return false.
+            // Otherwise return true.
+            //
+            // For example:
+            //
+            // var selectedPartnerType = $('input[name="partner-type"]:checked').val();
+            // if (selectedPartnerType == 'gender-same' && (!selectedGender || selectedGender == 'unknown')) {
+            //     showSimpleDialog('注意', '同性とのチャットを希望される場合は、あなたの性別を選択してください。');
+            //     return false;
+            //}
+            return true;
+        }
+
+        $(document).ready(function(evt) {
+            // The clientTabId is used to differentiate users
+            // when the client uses more than one tab in his browser.
+            var clientTabId = new Date().getTime();
+            $('#client-tab-id').val(clientTabId);
+
+            $('#join-chat').on('click', validateForm);
+
+            $('#system_or_user').val("system");
+
+            $('#hidden_news_num').val(hidden_news_num);
+        });
+    </script>
+    <script id="script-base">
+        var clientTabId = '{{ client_tab_id }}';
+
+        // If the user leaves the chat and one of the users has not produces this number of replies yet,
+        // a warning message will ask the user to continue the conversation.
+        // This message will be shown once.
+        var MSG_COUNT_LOW = {{ msg_count_low }};
+
+        // After the user sends a message, if both users have produced this number of replies, we will show
+        // a warning message that will ask the user to conclude the conversation ASAP.
+        // This message will be shown once.
+        var MSG_COUNT_HIGH = {{ msg_count_high }};
+
+        //var WAITING_FOR_PARTNER_DELAY = {{delay_for_partner}} * 1000;
+        //var chatroomId = '{{ chatroom_id }}';
+        //var timeoutInMs = {{ poll_interval }} * 1000;
+        //var mainBoxMargin = '{% if experiment_id %}180px{% else %}100px{% endif %}';
+
+        const news_tuple = {{ news|tojson }}
+        let condition = {{ cond|tojson }}
+        var tweets = {{ tweet_lst|tojson }}
+        let hidden_news_num = {{ news_num|tojson }}
+    </script>
+</head>
+<body class="column">
+    <h1>チャットサーバー</h1>
+    <br/><br/>
+    <p>まずは、下の「新聞記事」をクリックしてお読みください</p>
+    <div id="article"></div>
+
+    <br>
+    <p>次ページでのチャットでは、読んでいただいた記事について対話をしていただきます。</p>
+    <p>以下の「<b>対話の仕方</b>」をご確認ください。</p>
+    <b>対話の仕方</b>
+    <div id="how-to-chat"></div>
+    <br>
+    <b>新聞記事に対する世間のコメント</b>
+    <div id="tweets"></div>
+    <p>「新聞記事」と「対話の仕方」を確認したら、下の「チャットを始める」ボタンをクリックして下さい。</p>
+    <p>「新聞記事」「対話の仕方」「世間のコメント」は次ページでも見ることができます。</p>
+
+
+    <form id="form-join" action="join" method="POST">
+        <input type="hidden" id="client-tab-id" name="clientTabId"/>
+        <input type="hidden" id="system_or_user" name="systemOrUser"/>
+        <input type="hidden" id="hidden_news_num" name="newsNum"/>
+    </form>
+    <input type="submit" id="join-chat" value="チャットを始める" class="button" form="form-join"/>
+    <div id="dialog-simple"></div>
+
+</body>
+</html>

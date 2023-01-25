@@ -1,0 +1,149 @@
+<!--
+ Copyright (c) 2023 Fuka Narita.
+  This source code is licensed under the MIT license found in the
+  LICENSE file in the root directory of this source tree.
+
+  Copyright (c) 2020 Kurohashi-Chu-Murawaki lab, Kyoto University.
+  Licensed under the MIT license.
+  https://opensource.org/licenses/mit-license.php
+-->
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>チャットサーバー</title>
+    <!-- <link rel="stylesheet" href="default_static/default_style.css">-->
+    <link rel="stylesheet" href="static/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script src="default_static/default_utils.js"></script>
+    <script src="static/utils.js"></script>
+    <script src="static/urls.js"></script>
+    <script id="script-base">
+        var clientTabId = '{{ client_tab_id }}';
+        var MSG_COUNT_LOW = {{ msg_count_low }};
+        var MSG_COUNT_HIGH = {{ msg_count_high }};
+
+        var WAITING_FOR_PARTNER_DELAY = {{delay_for_partner}} * 1000;
+        var isFirstUser = {% if is_first_user %}true{% else %}false{% endif %};
+        var chatroomId = '{{ chatroom_id }}';
+        var timeoutInMs = {{ poll_interval }} * 1000;
+        var mainBoxMargin = '{% if experiment_id %}180px{% else %}100px{% endif %}';
+
+        const news_tuple = {{ news|tojson }}
+        let condition = {{ cond|tojson }}
+        var tweets = {{ tweet_lst|tojson }}
+
+    </script>
+    <script src="default_static/default_chat_prologue.js"></script>
+    <script src="static/chat_prologue.js"></script>
+    <script src="default_static/default_chat.js"></script>
+    <script src="static/chat.js"></script>
+    <script src="default_static/default_chat_epilogue.js"></script>
+    <script src="static/chat_epilogue.js"></script>
+    <script src="static/system_instruction.js"></script>
+</head>
+<body class="column fixed-height">
+    <h2>チャットルーム</h2>
+    <div id="recommender">
+        <div class="taskDescription">
+            <ul>
+                <li><font color="red">「戻る」「再読み込み」を行わないでください</font></li>
+                <li>「新聞記事」は「新聞記事に対する世間のコメント」の下に記載されています。</li>
+            </ul>
+            <div id="system-explanation">
+                <b>対話の仕方</b>
+                <div id='how-to-chat'></div>
+                <br>
+                <b>新聞記事に対する世間のコメント</b>
+                <div id="tweets"></div>
+                <div id="article"></div>
+                <br>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="recommended">
+        <div class="taskDescription">
+            <b>対話の仕方</b>
+            <div id="how-to-chat_u">
+                <ul>
+                    <li>あなたは好奇心旺盛な人です。</li>
+                    <li>相手から与えられる話題について興味を持って楽しみながら話の理解を深めてください。</li>
+                    <li>なお、個人情報は発話しないようご注意ください。</li>
+                    <li>相手の発話を待ち、雑談を始めてください</li>
+                    <li>相手のメッセージを受け取ってからなるべく早く返信してください。</li>
+                    <li>相手との対話が始まってから相手の返信が6分以上ない場合はグーグルフォームの画面に戻り、そこに書かれた指示に従ってください。</li>
+                    <li>「戻る」「再読み込み」を行わないでください</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id="main-box">
+        <div id="chatbox-wrapper">
+            <div id="chatbox" class="shadowed">
+                <div id="conversation">
+                    <div id="messages" class="messages">
+                    </div>
+                    <div id="notification" class="notification">
+                        <p class="msg-info">相手のメッセージをお待ちください。</p>
+                    </div>
+                    <div id="controls" class="controls">
+                        <form action="javascript:;">
+                            <div id="new-msg-box" class="new-msg-box">
+                                <textarea id="new-msg" type="text" autocomplete="off" placeholder="メッセージを入力して下さい。送信はEnter、改行はShift+Enterです。" class="new-msg-field" rows="4"></textarea>
+                                <input id="send" type="submit" class="send-button" value="送信"/>
+                            </div>
+                        </form>
+                        <div id="chat-progress">
+                            <span id="chat-progress-left"><img src="default_static/images/bubbles.png" alt="会話プログレス" title="このプログレスバーはチャットの長さが十分なものかを示しています。プログレスバーの色が緑色になるまで対話を続けて下さい。" height="20" width="27"></img></span>
+                            <span id="chat-progress¯right"><img id="chat-progressbar" height="6"/></img></span>
+                            <div id="chat-progress-text"> </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="urls"></div>
+
+    <div id="message-chat-over">
+        <p class="msg-info">相手がチャットルームからいなくなりました。対話タスクは終了です。</p>
+    </div>
+    <div id="chatroom-infobox" class="shadowed">
+        <p>ご協力ありがとうございました！</p>
+        <p>下記のチャットIDを、グーグルフォームのタブに戻って入力してください。</p>
+        <p>それが完了するまでこの画面を閉じないでください</p>
+        <table>
+            <tr><td>チャットID:</td><td><span id="chatroom-id" class="important-number selectable">{{ chatroom_id }}-{% if is_first_user %}1{% else %}2{% endif %}</span></td></tr>
+        </table>
+    </div>
+    <div id="message-waiting">
+        <p class="msg-info">チャットする相手を探しています。少々お待ち下さい...</p>
+        <li><font color="red">「戻る」「再読み込み」を行わないでください</font></li>
+    </div>
+    <div id="message-try-later">
+        <p class="msg-info">他のユーザーとマッチングできませんでした。</p>
+    </div>
+    <div id="client-id-box" class="shadowed">
+        <p>下記のチャットIDを、グーグルフォームのタブに戻って入力してください。</p>
+        <table>
+            <tr><td>チャットID:</td><td><span id="show-client-tab-id" class="important-number selectable"></span></td></tr>
+        </table>
+        <p>それが完了するまでこの画面を閉じないでください</p>
+    </div>
+    <div id="message-thanks">
+        <p class="msg-info">ありがとうございます！</p>
+    </div>
+    <div id="other-buttons-box">
+        <input id="stop-chat" type="button" class="stop-chat-button" value="終了"/>
+    </div>
+    <div id="dialog-confirm"></div>
+    <div id="dialog-simple"></div>
+</body>
+</html>

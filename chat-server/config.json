@@ -1,0 +1,20 @@
+{
+    "sessions": "/tmp/ChatCollectionServer",
+    "sessionTimeout": 30,
+    "cookiePath": "/ChatCollectionServer",
+    "archives": "/tmp/dialogs",
+    "web_context": "ChatCollectionServer",
+    "poll_interval": 120,
+    "delay_for_partner": 3000,
+    "chatroom_cleaning_interval": 90,
+    "msg_count_low": 6,
+    "msg_count_high": 15,
+    "experiment_id": 126,
+    "prevent_multiple_tabs": "True",
+    "news_json": "/tmp/ChatCollectionServer/used_news/V1.json",
+    "news_num": -1,
+    "cond_num": 0,
+    "number_of_dialog": 1,
+    "crowd_sourcing_url": "https://example.com/ChatCollectionServer",
+    "urls_path": "/tmp/ChatCollectionServer/crowd_sourcing_urls.txt"
+}
