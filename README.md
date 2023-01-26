@@ -5,3 +5,5 @@
 |V1|202|2293|11.4|12.8|140|2.0|
 |V2|223|2496|11.2|13.0|206|2.9|
 |V1+V2|425|4789|11.3|12.9|346|2.5|
+
+本対話コーパス構築に使用した対話収集システムはhttps://github.com/fukanarita/newschat-with-impression/tree/main/chat-server に公開しています
