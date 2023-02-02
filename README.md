@@ -12,7 +12,7 @@
 本コーパスは日々の話題についてユーザと雑談する対話システムの実現を目指して構築したものである.
 本コーパスの特徴は，話者の雑談に加えて，雑談の話題となるニュースと，それに対するツイートがセットになっている点にある.
 本コーパスの使用により、対話システムの行う雑談に人々の感想を含めることができると期待される.
-本コーパスはWizard of Oz法で収集した対話が収録されており、本対話コーパス構築に使用した対話収集システムはhttps://github.com/fukanarita/newschat-with-impression/tree/main/chat-server に公開しています
+本コーパスはWizard of Oz法で収集した対話が収録されており、本対話コーパス構築に使用した対話収集システムはhttps://github.com/fukanarita/newschat-with-impression/tree/main/chat-server に公開している
 
 ### データ形式
 データは以下のようなjsonl形式となっている。<br>
