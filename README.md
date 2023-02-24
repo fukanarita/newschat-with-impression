@@ -18,7 +18,7 @@
 データは以下のようなjsonl形式となっている。<br>
 ```
 {
- "news_url": 対話のURL,
+ "news_url": 対話に使用したニュースのURL,
  "tweet_choices": 対話の実施時にシステム役に提示したツイート,
  "dialog_id": 対話ID, 
  "dialog": [
